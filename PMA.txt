@@ -1,0 +1,277 @@
+Practical 2
+Aim: Multiple Linear Regression
+
+> library(readxl)
+> MLR <- read_excel("MLR.xlsx", sheet = "Data")
+> View(MLR)
+> y=MLR$Children
+> y
+
+> x1=MLR$Education
+> x1
+
+
+> x2=MLR$Income
+> x2
+
+ model=lm(y~x1+x2)
+> model
+
+> summary(model)
+
+> plot(model)
+
+> shapiro.test(y)
+
+install packages("lmtest")
+library(lmtest)
+> bptest(model)
+
+
+library(readxl)
+> MLR <- read_excel("MLR.xlsx", sheet = "Data1")
+> View(MLR)
+> y=MLR$`Salary(y)`
+> y
+
+
+> x1=MLR$`Education(x1)`
+> x1
+
+> x2=MLR$`Experience(x2)`
+> x2
+
+> model=lm(y~x1+x2)
+> model
+
+
+> summary(model)
+> plot(model)
+> shapiro.test(y)
+> bptest(model)
+
+
+
+
+Practical 4- Linear Transformation
+
+> x = c(0.2, 0.528, 0.11, 0.260, 0.091, 1.314, 1.52, 0.244, 1.981, 0.273, 0.46
+1, 0.366, 1.407, 0.79, 2.266)
+> hist(x)
+
+> shapiro.test(x)
+
+> new1=log (x)
+> new1
+
+> shapiro.test(new1)
+
+> new2= x^2
+> new2
+
+> shapiro.test(new2)
+
+> new3=sqrt(x)
+> new3
+
+> shapiro.test(new3)
+
+
+> new4=1/x^2
+> new4
+
+> shapiro.test(new4)
+
+> new5=1/x
+> new5
+
+> shapiro.test(new5)
+
+> new6=1/sqrt(x)
+> new6
+
+> shapiro.test(new6)
+
+
+> install.packages("MASS")
+
+> library(MASS)
+> b = boxcox(lm(x ~ 1))
+> b
+
+> lambda = b$x[which.max(b$y)]
+> lambda
+
+#To check normality of transformed data
+> new=((x^lambda)-1)/lambda
+> new
+
+> shapiro.test(new)
+
+Box Cox transformation to identify the exact lambda. 
+
+> x=c(1, 1, 1, 2, 2, 2, 2, 2, 2, 3, 3, 3, 6, 7, 8)
+> y=c(7, 7, 8, 3, 2, 4, 4, 6, 6, 7, 5, 3, 3, 5, 8)
+> data <- data.frame(x, y)
+Extracting the exact lambda
+> library(MASS)
+> b= boxcox(lm(y~x))
+> b
+
+> lambda= b$x[which.max(b$y)]
+> lambda
+
+
+
+
+
+Practical 5   Aim: Multicollinearity-I
+
+> # Storing of data
+> install.packages("MASS")
+> library("MASS")
+> library("readr")
+> gdp=read_csv("Data.csv")
+
+> fit=lm(gdp$Import~gdp$GDP+gdp$SF+gdp$consp)
+> summary(fit)
+
+> plot(fit)
+
+> install.packages("lmtest")
+> library("lmtest")
+> bptest(fit)
+
+> shapiro.test(gdp$Import)
+
+
+> install.packages("mctest")
+> library("mctest")
+
+> design=cbind(gdp$GDP,gdp$SF,gdp$consp)
+> mctest(fit,type="i",method="VIF")
+
+> # Use of ridge regression
+> install.packages("glmnet")
+> library("glmnet")
+
+> ridgem<-cv.glmnet(design,gdp$Import)
+
+> ridgem
+
+> # Use lambda as lambda.min
+> modelridge=lm.ridge(gdp$Import~gdp$GDP+gdp$SF+gdp$consp,lambda=ridgem$lambda
+.min)
+> modelridge
+
+> summary(modelridge)
+
+> coef(modelridge)
+
+Q.2 Check the multicollinearity and use remedial measures for the data whose descripti
+on is
+
+> #Storing the data
+> install.packages("MASS")
+> library(MASS)
+> install.packages("readr")
+> library("readr")
+> #auto-mpg=read.csv("Auto-MPG.csv")
+> Auto_MPG <- read_csv("Auto_MPG.csv")
+
+> y1.1=Auto_MPG$MPG
+> x1.1=Auto_MPG$cylinders
+> x2.1=Auto_MPG$displacement
+> x3.1=Auto_MPG$horsepower
+> x4.1=Auto_MPG$weight
+> x5.1=Auto_MPG$accelaration
+> x6.1=Auto_MPG$year
+> #Fitting the model
+> model1=lm(y1.1~x1.1+x2.1+x3.1+x4.1+x5.1+x6.1)
+> #Obtain the estimates of parameter and checking of significance of individua
+l
+> #regression coefficients and checking of overall significance of the model
+> summary(model1)
+
+> plot(model1)
+
+> install.packages("lmtest")
+> library(lmtest)
+> bptest(model1)
+
+> shapiro.test(y1.1)
+
+
+> y1.1new=log(y1.1)
+> # Fitting of model
+> model1new=lm(y1.1new~x1.1+x2.1+x3.1+x4.1+x5.1+x6.1)
+> #Obtain the estimates of parameter and
+> #checking of significance of individual
+> #regression coefficients and checking of overall
+> #significance of the model
+> summary(model1new)
+
+> plot(model1new)
+
+> library(lmtest)
+> bptest(model1new)
+
+> shapiro.test(y1.1new)
+
+> install.packages("mctest")
+> library(mctest)
+> design.11=cbind(x1.1,x2.1,x3.1,x4.1,x5.1,x6.1)
+> mctest(model1new,type="i",method="VIF")
+
+> # Use of ridge regression
+> install.packages("glmnet")
+> library("glmnet")
+
+> cv.glmnet(design.11,y1.1new)
+
+> ridgemodel<-cv.glmnet(design.11,y1.1new)
+
+
+> # Use lambda as lambda.min
+> finalridge1=lm.ridge(y1.1new~x1.1+x2.1+x3.1+x4.1+x5.1+x6.1,lambda=ridgemodel
+$lambda.min)
+> summary(finalridge1)
+
+> coef(finalridge1)
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
